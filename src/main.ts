@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
+import rateLimiter from 'express-rate-limit';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,6 +22,13 @@ async function bootstrap() {
     .setDescription('A documentation from example api')
     .setVersion('1.0')
     .build();
+  app.use(helmet());
+  app.use(
+    rateLimiter({
+      windowMs: 60, // 1 minutes
+      max: 50, // limit each IP to 100 requests per windowMs
+    }),
+  );
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
   await app.listen(configService.get('PORT'));
