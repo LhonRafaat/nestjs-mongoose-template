@@ -5,7 +5,7 @@ import { UsersModule } from './modules/users/users.module';
 import { FilterationMiddleware } from './common/helper/filteration-middleware';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
-import { MongooseModule, MongooseModuleFactoryOptions } from '@nestjs/mongoose';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -19,12 +19,11 @@ import { MongooseModule, MongooseModuleFactoryOptions } from '@nestjs/mongoose';
     }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) =>
-        ({
-          uri: configService.get('DB_URL'),
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        } as MongooseModuleFactoryOptions),
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get('DB_URL'),
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }),
     }),
     UsersModule,
   ],
