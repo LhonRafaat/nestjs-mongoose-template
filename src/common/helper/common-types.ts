@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { TUser } from '../../modules/users/user.model';
 
 export interface SearchObj {
   [key: string]:
@@ -20,5 +21,5 @@ export interface IRequest extends Request {
   searchObj: SearchObj;
   dateQr: DateQuery;
   skip: number;
-  user: any; // this will be any for now unitl user type is created
+  user: TUser;
 }
