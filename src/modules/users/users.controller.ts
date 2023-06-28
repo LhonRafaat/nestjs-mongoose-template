@@ -1,7 +1,19 @@
-import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { TUser } from './user.model';
+import { AuthGuard } from '@nestjs/passport';
+import { IRequest } from '../../common/helper/common-types';
 
 @Controller('users')
 @ApiTags('Users')
@@ -14,9 +26,15 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  getMe(@Req() req: IRequest): TUser {
+    return req.user;
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  findOne(@Param('id') id: string): Promise<TUser> {
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
