@@ -23,6 +23,7 @@
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/jwt": "^10.1.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/mongoose": "^10.0.0",
     "@nestjs/passport": "^10.0.0",
@@ -36,6 +37,7 @@
     "joi": "^17.9.2",
     "mongoose": "^7.3.1",
     "passport": "^0.6.0",
+    "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
@@ -49,6 +51,7 @@
     "@types/jest": "29.2.4",
     "@types/mongoose": "^5.11.97",
     "@types/node": "18.11.18",
+    "@types/passport-jwt": "^3.0.8",
     "@types/passport-local": "^1.0.35",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
