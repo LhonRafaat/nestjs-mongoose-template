@@ -15,7 +15,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true, // set to true to throw an error if extra fields were sent by client
       forbidNonWhitelisted: true, // use with whitelist
-      disableErrorMessages: true, // use this for production if you do not want to send detailed error messages back to client
+      disableErrorMessages: false, // set to true if you do not want to send detailed error messages back to client
     }),
   );
   const config = new DocumentBuilder()
