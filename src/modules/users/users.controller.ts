@@ -26,8 +26,8 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get('me')
   @UseGuards(AuthGuard('jwt'))
+  @Get('me')
   getMe(@Req() req: IRequest): TUser {
     return req.user;
   }
