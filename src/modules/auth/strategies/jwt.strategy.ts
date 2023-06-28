@@ -20,18 +20,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  /**
-   * Checks if the bearer token is a valid token
-   * @param {JwtPayload} jwtPayload validation method for jwt token
-   * @param {any} done callback to resolve the request user with
-   * @returns {Promise<boolean>} whether or not to validate the jwt token
-   */
-  async validate({ iat, exp, _id }, done): Promise<boolean> {
+  async validate({ iat, exp, id }, done): Promise<boolean> {
     const timeDiff = exp - iat;
     if (timeDiff <= 0) {
       throw new UnauthorizedException();
     }
-    const user = await this.userService.findOne(_id);
+
+    const user = await this.userService.findOne(id);
     if (!user) {
       throw new UnauthorizedException();
     }
