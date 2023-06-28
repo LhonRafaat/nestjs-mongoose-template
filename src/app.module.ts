@@ -16,6 +16,8 @@ import { AuthModule } from './modules/auth/auth.module';
       validationSchema: Joi.object({
         PORT: Joi.number().default(3000),
         DB_URL: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_EXPIRATION: Joi.string().required(),
       }),
     }),
     MongooseModule.forRootAsync({
@@ -26,6 +28,7 @@ import { AuthModule } from './modules/auth/auth.module';
         useUnifiedTopology: true,
       }),
     }),
+
     UsersModule,
     AuthModule,
   ],
