@@ -32,6 +32,13 @@ export function QueryTypes() {
         'value of the searched field. ex ?search=name&searchVal=lhon',
     }),
     ApiQuery({
+      name: 'dateField',
+      required: false,
+      type: String,
+      description:
+        'name of the date field you want to query for. By default is createdAt',
+    }),
+    ApiQuery({
       name: 'start',
       required: false,
       type: String,
