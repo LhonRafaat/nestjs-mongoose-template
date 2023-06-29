@@ -7,6 +7,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,7 +19,12 @@ import {
 } from '@nestjs/swagger';
 import { TUser } from './user.model';
 import { AuthGuard } from '@nestjs/passport';
-import { IRequest, getResponseType } from '../../common/helper/common-types';
+import {
+  IQuery,
+  IRequest,
+  TResponse,
+  getResponseType,
+} from '../../common/helper/common-types';
 import { QueryTypes } from '../../common/decorators/query.decorator';
 
 @Controller('users')
@@ -31,8 +37,11 @@ export class UsersController {
   @Get()
   @ApiOkResponse(getResponseType(TUser))
   @QueryTypes()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll(
+    @Req() req: IRequest,
+    @Query() query: IQuery,
+  ): Promise<TResponse<TUser>> {
+    return this.usersService.findAll(req, query);
   }
 
   @UseGuards(AuthGuard('jwt'))
