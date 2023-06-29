@@ -10,18 +10,27 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { TUser } from './user.model';
 import { AuthGuard } from '@nestjs/passport';
-import { IRequest } from '../../common/helper/common-types';
+import { IRequest, getResponseType } from '../../common/helper/common-types';
+import { QueryTypes } from '../../common/decorators/query.decorator';
 
 @Controller('users')
 @ApiTags('Users')
 @ApiBearerAuth()
+@ApiExtraModels(TUser) // this decorator helps us to resolve TUser class when used in getResponseType function
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @ApiOkResponse(getResponseType(TUser))
+  @QueryTypes()
   findAll() {
     return this.usersService.findAll();
   }
