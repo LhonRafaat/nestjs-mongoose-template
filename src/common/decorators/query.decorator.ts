@@ -5,12 +5,18 @@ export function QueryTypes() {
   return applyDecorators(
     ApiQuery({ name: 'page', required: false, type: Number }),
     ApiQuery({ name: 'limit', required: false, type: Number }),
-    ApiQuery({ name: 'sort', required: false, type: String }),
+    ApiQuery({
+      name: 'sort',
+      required: false,
+      type: String,
+      description: 'ex sort=price',
+    }),
     ApiQuery({
       name: 'orderBy',
       required: false,
       type: String,
-      description: 'order by a field ex. orderBy=name',
+      enum: ['asc', 'desc'],
+      description: 'ascending or descending for the sort field',
     }),
     ApiQuery({
       name: 'search',
@@ -30,14 +36,14 @@ export function QueryTypes() {
       required: false,
       type: String,
       description:
-        'start of the date. ex ?start=2023-03-27T13:07:36.701Z&end=2023-03-27T13:07:36.701Z. start and end must be used together',
+        'start of the date. ex ?start=2023-03-27T13:07:36.701Z&end=2023-03-27T13:07:36.701Z',
     }),
     ApiQuery({
       name: 'end',
       required: false,
       type: String,
       description:
-        'end of the date. ex ?start=2023-03-27T13:07:36.701Z&end=2023-03-27T13:07:36.701Z. start and end must be used together',
+        'end of the date. ex ?start=2023-03-27T13:07:36.701Z&end=2023-03-27T13:07:36.701Z',
     }),
   );
 }
