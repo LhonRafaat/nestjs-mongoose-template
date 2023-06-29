@@ -55,7 +55,7 @@ export const getResponseType = (Type: any) => {
   };
 };
 
-export class IResponse<T> {
+export class TResponse<T> {
   @ApiProperty()
   result: T[];
 
