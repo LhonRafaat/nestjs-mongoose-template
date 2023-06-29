@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { TUser } from '../../modules/users/user.model';
-import { getSchemaPath } from '@nestjs/swagger';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 
 export interface SearchObj {
   [key: string]:
@@ -54,3 +54,17 @@ export const getResponseType = (Type: any) => {
     },
   };
 };
+
+export class IResponse<T> {
+  @ApiProperty()
+  result: T[];
+
+  @ApiProperty()
+  count: number;
+
+  @ApiProperty()
+  page: number;
+
+  @ApiProperty()
+  limit: number;
+}
