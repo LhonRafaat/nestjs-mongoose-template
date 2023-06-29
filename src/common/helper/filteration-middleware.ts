@@ -36,14 +36,25 @@ export class FilterationMiddleware implements NestMiddleware {
     let dateQr = undefined;
     if (!req.query.dateField) req.query.dateField = 'createdAt';
 
-    if (req.query.start && req.query.end)
-      dateQr = {
-        [req.query.dateField as string]: {
+    if (req.query.start || req.query.end) {
+      dateQr = {};
+
+      if (req.query.start) {
+        dateQr[req.query.dateField as string] = {
+          ...dateQr[req.query.dateField as string],
           $gte: req.query.start,
+        };
+      }
+
+      if (req.query.end) {
+        dateQr[req.query.dateField as string] = {
+          ...dateQr[req.query.dateField as string],
           $lte: req.query.end,
-        },
-      };
+        };
+      }
+    }
     req.dateQr = dateQr;
+    console.log(dateQr);
     req.searchObj = searchObj;
 
     const skip: number = (+req.query.page - 1) * +req.query.limit;
