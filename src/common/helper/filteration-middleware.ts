@@ -39,6 +39,7 @@ export class FilterationMiddleware implements NestMiddleware {
     if (req.query.start || req.query.end) {
       dateQr = {};
 
+      // if start exists add it to the dateQr
       if (req.query.start) {
         dateQr[req.query.dateField as string] = {
           ...dateQr[req.query.dateField as string],
@@ -46,6 +47,7 @@ export class FilterationMiddleware implements NestMiddleware {
         };
       }
 
+      // if end exists add it to the dateQr
       if (req.query.end) {
         dateQr[req.query.dateField as string] = {
           ...dateQr[req.query.dateField as string],
