@@ -68,3 +68,14 @@ export class TResponse<T> {
   @ApiProperty()
   limit: number;
 }
+
+export interface IQuery {
+  limit: number;
+  page: number;
+  sort: string;
+  orderBy: string;
+  search: string[];
+  searchVal: string[] | number[];
+  start: string;
+  end: string;
+}
