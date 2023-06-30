@@ -54,11 +54,10 @@ export class UsersService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async remove(id: string): Promise<{ message: string }> {
+    await this.findOne(id);
+    await this.userModel.findByIdAndDelete(id);
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    return { message: `User with id ${id} deleted` };
   }
 }
