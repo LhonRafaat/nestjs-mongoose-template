@@ -23,6 +23,10 @@ export const User = new Schema<TUser>(
       type: String,
       required: false,
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );
