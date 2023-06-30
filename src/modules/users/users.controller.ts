@@ -20,12 +20,15 @@ import {
 import { TUser } from './user.model';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  Action,
   IQuery,
   IRequest,
   TResponse,
   getResponseType,
 } from '../../common/helper/common-types';
 import { QueryTypes } from '../../common/decorators/query.decorator';
+import { checkAbilities } from '../../common/decorators/abilities.decorator';
+import { AbilitiesGuard } from '../../common/guards/abilities.guard';
 
 @Controller('users')
 @ApiTags('Users')
@@ -37,7 +40,8 @@ export class UsersController {
   @Get()
   @ApiOkResponse(getResponseType(TUser))
   @QueryTypes()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), AbilitiesGuard)
+  @checkAbilities({ action: Action.Read, subject: TUser })
   async findAll(
     @Req() req: IRequest,
     @Query() query: IQuery,
@@ -60,7 +64,8 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), AbilitiesGuard)
+  @checkAbilities({ action: Action.Delete, subject: TUser })
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
