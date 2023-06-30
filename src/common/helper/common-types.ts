@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { TUser } from '../../modules/users/user.model';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { InferSubjects } from '@casl/ability';
 
 export interface SearchObj {
   [key: string]:
@@ -78,4 +79,19 @@ export interface IQuery {
   searchVal: string[] | number[];
   start: string;
   end: string;
+}
+
+export type Subjects = InferSubjects<typeof TUser | 'all'>;
+
+export enum Action {
+  Manage = 'manage',
+  Create = 'create',
+  Read = 'read',
+  Update = 'update',
+  Delete = 'delete',
+}
+
+export interface RequiredRule {
+  subject: Subjects;
+  action: Action;
 }
