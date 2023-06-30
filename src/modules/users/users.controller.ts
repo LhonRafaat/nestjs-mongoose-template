@@ -37,6 +37,7 @@ export class UsersController {
   @Get()
   @ApiOkResponse(getResponseType(TUser))
   @QueryTypes()
+  @UseGuards(AuthGuard('jwt'))
   async findAll(
     @Req() req: IRequest,
     @Query() query: IQuery,
@@ -45,22 +46,27 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @ApiOkResponse({ type: TUser })
   @Get('me')
   getMe(@Req() req: IRequest): TUser {
     return req.user;
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOkResponse({ type: TUser })
   findOne(@Param('id') id: string): Promise<TUser> {
     return this.usersService.findOne(id);
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
