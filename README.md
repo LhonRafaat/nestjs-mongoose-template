@@ -8,6 +8,7 @@
 - Config Service
 - Swagger
 - Authentication
+- Access Control (CASL)
 - Pagination Middleware
 
 ## Getting Started
