@@ -33,6 +33,11 @@ To get a local copy up and running follow these steps.
    npm install
    ```
 
+5. If you haven't installed MongoDB on your system, run the Docker image using the following command:
+   ```shell
+   docker compose up -d
+   ```
+
 ### Usage
 
 To start the development server, run the following command:
