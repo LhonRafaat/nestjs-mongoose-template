@@ -19,7 +19,7 @@ export class UsersService {
       })
       .sort({ [query.sort]: query.orderBy === 'desc' ? -1 : 1 });
 
-    const total = await users.clone().count();
+    const total = await users.clone().countDocuments();
 
     users.limit(+query.limit).skip(req.skip);
 
