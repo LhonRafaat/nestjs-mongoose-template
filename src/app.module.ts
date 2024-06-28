@@ -8,6 +8,7 @@ import * as Joi from 'joi';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
 import { CaslModule } from './modules/casl/casl.module';
+import { EnvConfig } from './config.type';
 
 @Module({
   imports: [
@@ -17,13 +18,15 @@ import { CaslModule } from './modules/casl/casl.module';
       validationSchema: Joi.object({
         PORT: Joi.number().default(3000),
         DB_URL: Joi.string().required(),
-        JWT_SECRET: Joi.string().required(),
-        JWT_EXPIRATION: Joi.string().required(),
+        ACCESS_SECRET: Joi.string().required(),
+        REFRESH_SECRET: Joi.string().required(),
+        ACCESS_TOKEN_EXPIRATION: Joi.string().required(),
+        REFRESH_TOKEN_EXPIRATION: Joi.string().required(),
       }),
     }),
     MongooseModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      inject: [ConfigService<EnvConfig>],
+      useFactory: (configService: ConfigService<EnvConfig>) => ({
         uri: configService.get('DB_URL'),
       }),
     }),
