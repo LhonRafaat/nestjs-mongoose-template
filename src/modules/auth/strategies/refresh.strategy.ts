@@ -27,8 +27,6 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
       throw new UnauthorizedException();
     }
 
-    console.log({ ...rest });
-
     const user = await this.userService.findOne(_id);
     if (!user) {
       throw new UnauthorizedException();
