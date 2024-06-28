@@ -6,6 +6,7 @@ import { RegisterPayload } from './dto/register.payload';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { EnvConfig } from '../../config.type';
+import { TAuthResponse } from './types/auth.response';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
     private readonly configService: ConfigService<EnvConfig>,
   ) {}
 
-  async validateUser(payload: LoginPayload): Promise<any> {
+  async validateUser(payload: LoginPayload): Promise<TAuthResponse> {
     const user = await this.usersService.findByEmail(payload.email);
     if (user) {
       const isMatch = await bcrypt.compare(payload.password, user.password);
@@ -24,7 +25,9 @@ export class AuthService {
           _id: user._id,
           fullName: user.fullName,
         });
-        return { tokens };
+
+        await this.updateRefreshToken(user._id, tokens.refreshToken);
+        return tokens;
       }
     }
     throw new UnauthorizedException(
@@ -32,8 +35,17 @@ export class AuthService {
     );
   }
 
-  async register(payload: RegisterPayload) {
-    return await this.usersService.create(payload);
+  async register(payload: RegisterPayload): Promise<TAuthResponse> {
+    const user = await this.usersService.create(payload);
+
+    const tokens = await this.getTokens({
+      _id: user._id,
+      fullName: user.fullName,
+    });
+
+    await this.updateRefreshToken(user._id, tokens.refreshToken);
+
+    return tokens;
   }
 
   async getTokens(payload: { _id: string; fullName: string }) {
@@ -54,7 +66,29 @@ export class AuthService {
     };
   }
 
+  async updateRefreshToken(id: string, refreshToken: string) {
+    const hashedRefreshToken = await this.hashData(refreshToken);
+    return await this.usersService.updateRefreshToken(id, hashedRefreshToken);
+  }
+
   async hashData(data: string) {
     return await bcrypt.hash(data, 10);
+  }
+
+  async refreshTokens(userId: string) {
+    const user = await this.usersService.findOne(userId);
+    if (!user || !user.refreshToken)
+      throw new UnauthorizedException('Access Denied');
+
+    const tokens = await this.getTokens({
+      _id: user._id,
+      fullName: user.fullName,
+    });
+    await this.updateRefreshToken(user._id, tokens.refreshToken);
+    return tokens;
+  }
+
+  async logout(userId: string) {
+    return await this.usersService.updateRefreshToken(userId, null);
   }
 }
