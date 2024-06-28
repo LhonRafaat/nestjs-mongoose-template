@@ -42,6 +42,25 @@ export class UsersService {
     });
   }
 
+  async update(id: string, payload: UpdateUserDto): Promise<TUser> {
+    await this.findOne(id);
+    return await this.userModel.findByIdAndUpdate(id, payload, {
+      runValidators: true,
+      new: true,
+    });
+  }
+
+  async updateRefreshToken(id: string, refreshToken: string) {
+    await this.findOne(id);
+    return await this.userModel.findByIdAndUpdate(
+      id,
+      {
+        refreshToken,
+      },
+      { new: true, runValidators: true },
+    );
+  }
+
   async findOne(id: string): Promise<TUser> {
     const user = await this.userModel.findById(id);
     if (!user) throw new BadRequestException('User not found');
