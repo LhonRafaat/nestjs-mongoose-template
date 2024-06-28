@@ -5,9 +5,11 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import rateLimiter from 'express-rate-limit';
+import { AllExceptionsFilter } from './common/helper/global-error-handler';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalFilters(new AllExceptionsFilter()); // handle internal server errors
 
   const configService = app.get(ConfigService);
   app.setGlobalPrefix('api');
