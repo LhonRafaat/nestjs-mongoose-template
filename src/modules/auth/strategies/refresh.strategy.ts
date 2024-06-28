@@ -21,11 +21,20 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     });
   }
 
-  async validate({ iat, exp }, done): Promise<boolean> {
+  async validate({ iat, exp, _id, ...rest }, done): Promise<boolean> {
     const timeDiff = exp - iat;
     if (timeDiff <= 0) {
       throw new UnauthorizedException();
     }
+
+    console.log({ ...rest });
+
+    const user = await this.userService.findOne(_id);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    done(null, user);
 
     return true;
   }
