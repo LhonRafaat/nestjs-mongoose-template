@@ -9,7 +9,7 @@ import { EnvConfig } from '../../../config.type';
  * Jwt Strategy Class
  */
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
   constructor(
     readonly configService: ConfigService<EnvConfig>,
     private readonly userService: UsersService,
@@ -17,22 +17,16 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get('ACCESS_SECRET'),
+      secretOrKey: configService.get('REFRESH_SECRET'),
     });
   }
 
-  async validate({ iat, exp, id }, done): Promise<boolean> {
+  async validate({ iat, exp }, done): Promise<boolean> {
     const timeDiff = exp - iat;
     if (timeDiff <= 0) {
       throw new UnauthorizedException();
     }
 
-    const user = await this.userService.findOne(id);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    done(null, user);
     return true;
   }
 }
