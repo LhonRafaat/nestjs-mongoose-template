@@ -25,8 +25,6 @@ import { CaslModule } from './modules/casl/casl.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         uri: configService.get('DB_URL'),
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
       }),
     }),
 
