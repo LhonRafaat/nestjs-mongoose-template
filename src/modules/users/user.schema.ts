@@ -13,6 +13,10 @@ export const User = new Schema<TUser>(
       required: true,
       unique: true,
     },
+    refreshToken: {
+      type: String,
+      required: true,
+    },
 
     password: {
       type: String,

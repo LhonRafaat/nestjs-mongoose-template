@@ -17,6 +17,9 @@ export class TUser {
   avatar: string;
 
   @ApiProperty()
+  refreshToken: string;
+
+  @ApiProperty()
   isAdmin: boolean;
 
   @ApiProperty()
