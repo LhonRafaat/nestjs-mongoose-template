@@ -15,7 +15,8 @@ export const User = new Schema<TUser>(
     },
     refreshToken: {
       type: String,
-      required: true,
+      required: false,
+      default: null,
     },
 
     password: {
