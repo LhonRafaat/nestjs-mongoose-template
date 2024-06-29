@@ -29,6 +29,7 @@ import {
 import { QueryTypes } from '../../common/decorators/query.decorator';
 import { checkAbilities } from '../../common/decorators/abilities.decorator';
 import { AbilitiesGuard } from '../../common/guards/abilities.guard';
+import { AccessTokenGuard } from '../../common/guards/jwt.guard';
 
 @Controller('users')
 @ApiTags('Users')
@@ -40,7 +41,7 @@ export class UsersController {
   @Get()
   @ApiOkResponse(getResponseType(TUser))
   @QueryTypes()
-  @UseGuards(AuthGuard('jwt'), AbilitiesGuard)
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
   @checkAbilities({ action: Action.Read, subject: TUser })
   async findAll(
     @Req() req: IRequest,
@@ -49,7 +50,7 @@ export class UsersController {
     return this.usersService.findAll(req, query);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AccessTokenGuard)
   @ApiOkResponse({ type: TUser })
   @Get('me')
   getMe(@Req() req: IRequest): TUser {
@@ -57,14 +58,14 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AccessTokenGuard)
   @ApiOkResponse({ type: TUser })
   findOne(@Param('id') id: string): Promise<TUser> {
     return this.usersService.findOne(id);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'), AbilitiesGuard)
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
   @checkAbilities({ action: Action.Delete, subject: TUser })
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
