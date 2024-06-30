@@ -43,7 +43,7 @@ To get a local copy up and running follow these steps.
 To start the development server, run the following command:
 
 ```shell
-npm run start:dev
+npm run dev
 ```
 
 The server should now be running at `http://localhost:<port>`. You can access the endpoints using a tool like Postman or any web browser.
