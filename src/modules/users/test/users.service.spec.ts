@@ -152,4 +152,20 @@ describe('UsersService', () => {
     expect(result).toEqual(userStub());
     expect(userModel.findOne).toHaveBeenCalledWith({ email: userStub().email });
   });
+
+  it('should update user refresh token', async () => {
+    jest.spyOn(userModel, 'findById').mockResolvedValue(userStub() as any);
+    jest
+      .spyOn(userModel, 'findByIdAndUpdate')
+      .mockResolvedValue(userStub() as any);
+
+    const result = await service.updateRefreshToken(userStub()._id, 'token');
+    expect(result).toEqual(userStub());
+    expect(userModel.findById).toHaveBeenCalledWith(userStub()._id);
+    expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith(
+      userStub()._id,
+      { refreshToken: 'token' },
+      { runValidators: true, new: true },
+    );
+  });
 });
