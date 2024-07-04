@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
+import { UsersService } from '../users.service';
 import { getModelToken } from '@nestjs/mongoose';
-import { TUser } from './user.model';
+import { TUser } from '../user.model';
 import { Model } from 'mongoose';
-import { userStub } from './test/user.stub';
-import { IQuery, TResponse } from '../../common/helper/common-types';
+import { userStub } from './user.stub';
+import { IQuery, TResponse } from '../../../common/helper/common-types';
 import * as bcrypt from 'bcrypt';
 
 // Mock bcrypt.hash function
@@ -23,6 +23,7 @@ describe('UsersService', () => {
           useValue: {
             find: jest.fn(),
             findById: jest.fn(),
+            findOne: jest.fn(),
             create: jest.fn(),
             findByIdAndUpdate: jest.fn(),
             findByIdAndDelete: jest.fn(),
@@ -137,5 +138,18 @@ describe('UsersService', () => {
     });
     expect(service.findOne).toHaveBeenCalledWith(userStub()._id);
     expect(userModel.findByIdAndDelete).toHaveBeenCalledWith(userStub()._id);
+  });
+
+  it('should return a user by email', async () => {
+    jest.spyOn(userModel, 'findOne').mockImplementation(
+      () =>
+        ({
+          select: jest.fn().mockResolvedValue(userStub() as any),
+        }) as any,
+    );
+
+    const result = await service.findByEmail(userStub().email);
+    expect(result).toEqual(userStub());
+    expect(userModel.findOne).toHaveBeenCalledWith({ email: userStub().email });
   });
 });
