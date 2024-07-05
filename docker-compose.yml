@@ -1,8 +1,31 @@
-version: '3'
+version: '3.8'
 services:
+  backend:
+    build: ./
+    networks:
+      - nestjs
+    container_name: nestjs-boilerplate
+    env_file: .env
+    environment:
+      - PORT=${PORT}
+      - DB_URL=${DB_URL}
+      - APP_ENV=${APP_ENV}
+      - ACCESS_SECRET=${ACCESS_SECRET}
+      - REFRESH_SECRET=${REFRESH_SECRET}
+      - ACCESS_TOKEN_EXPIRATION=${ACCESS_TOKEN_EXPIRATION}
+      - REFRESH_TOKEN_EXPIRATION=${REFRESH_TOKEN_EXPIRATION}
+
+    ports:
+      - 5000:5000
+    depends_on:
+      - mongodb
+
   mongodb:
     image: mongo:6
+    container_name: mongodb
     restart: always
+    networks:
+      - nestjs
     environment:
       MONGO_INITDB_ROOT_USERNAME: dev
       MONGO_INITDB_ROOT_PASSWORD: dev
@@ -10,3 +33,6 @@ services:
       - 27017:27017
     volumes:
       - ./data:/data/db
+networks:
+  nestjs:
+    driver: bridge
