@@ -3,7 +3,7 @@ import { TUser } from '../user.model';
 export const userStub = (): TUser => {
   return {
     _id: '667ef71fb67a3ddc02f2adc3',
-    fullName: 'lhon',
+    fullName: 'john doe',
     email: 'example@gmail.com',
     refreshToken: '132324',
     password: '12345',
