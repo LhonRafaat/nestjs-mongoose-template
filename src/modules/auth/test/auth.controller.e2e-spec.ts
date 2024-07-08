@@ -8,11 +8,13 @@ import { RegisterPayload } from '../dto/register.payload';
 import { TAuthResponse } from '../types/auth.response';
 import { LoginPayload } from '../dto/login.payload';
 import { userStub } from '../../users/test/user.stub';
+import { TUser } from '../../users/user.model';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let authService: AuthService;
   let usersService: UsersService;
+  let createdUser: TUser;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -27,6 +29,7 @@ describe('AuthController (e2e)', () => {
   });
 
   afterAll(async () => {
+    await usersService.remove(createdUser._id);
     await app.close();
   });
 
@@ -43,7 +46,7 @@ describe('AuthController (e2e)', () => {
         .post('/auth/register')
         .send(registerPayload)
         .expect(201);
-
+      createdUser = await usersService.findByEmail(userStub().email);
       const tokens: TAuthResponse = response.body;
       expect(tokens).toHaveProperty('accessToken');
       expect(tokens).toHaveProperty('refreshToken');
