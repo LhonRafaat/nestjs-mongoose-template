@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { TUser } from '../../users/user.model';
 
 export class RegisterPayload {
@@ -21,4 +21,8 @@ export class RegisterPayload {
   @ApiProperty()
   @IsString()
   avatar: string;
+
+  @ApiProperty()
+  @IsOptional()
+  isAdmin?: boolean;
 }
