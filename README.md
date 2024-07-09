@@ -10,6 +10,11 @@
 - Authentication
 - Access Control (CASL)
 - Pagination Middleware
+- Refresh and Access tokens
+- Unit testing and E2E testing
+- Github actions
+- Docker
+- K8S
 
 ## Getting Started
 
@@ -33,11 +38,6 @@ To get a local copy up and running follow these steps.
    npm install
    ```
 
-5. If you haven't installed MongoDB on your system, run the Docker image using the following command:
-   ```shell
-   docker compose up -d
-   ```
-
 ### Usage
 
 To start the development server, run the following command:
@@ -45,5 +45,33 @@ To start the development server, run the following command:
 ```shell
 npm run dev
 ```
+
+To start unit testing, run the following command:
+
+```shell
+npm run test
+```
+
+and to run E2E tests:
+
+```shell
+npm run test:e2e
+```
+
+to run the Dockerfile:
+
+```shell
+docker compose up -d
+```
+
+to run the K8S, navigate to k8s directory and run:
+
+```shell
+kubectl apply -f backend-config.yaml
+kubectl apply -f backend-deployment.yaml
+kubectl apply -f mongodb-deployment.yaml
+```
+
+ps: make sure you have a k8s cluster running, I use minikube.
 
 The server should now be running at `http://localhost:<port>`. You can access the endpoints using a tool like Postman or any web browser.
