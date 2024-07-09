@@ -12,6 +12,7 @@
 - Pagination Middleware
 - Refresh and Access tokens
 - Unit testing and E2E testing
+- Seeder
 - Github actions
 - Docker
 - K8S
@@ -56,6 +57,12 @@ and to run E2E tests:
 
 ```shell
 npm run test:e2e
+```
+
+to run the seeder ts-node the seed.ts file and you can pass how many data to generate as a arguement:
+
+```shell
+ts-node seed.ts 50
 ```
 
 to run the Dockerfile:
