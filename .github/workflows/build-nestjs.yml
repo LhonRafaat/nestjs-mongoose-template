@@ -26,6 +26,14 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - run: npm ci --legacy-peer-deps
+      - run: |
+          touch .env
+          echo ACCESS_SECRET=${{ secrets.ACCESS_SECRET }} >> .env
+          echo ACCESS_TOKEN_EXPIRATION=${{ secrets.ACCESS_TOKEN_EXPIRATION }} >> .env
+          echo DB_URL=${{ secrets.DB_URL }} >> .env
+          echo PORT=${{ secrets.PORT }} >> .env
+          echo REFRESH_SECRET=${{ secrets.REFRESH_SECRET }} >> .env
+          echo REFRESH_TOKEN_EXPIRATION=${{ secrets.REFRESH_TOKEN_EXPIRATION }} >> .env
       - run: npm run build --if-present
       - run: npm run test
       - run: npm run test:e2e
