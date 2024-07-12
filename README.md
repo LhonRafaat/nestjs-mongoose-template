@@ -82,3 +82,5 @@ kubectl apply -f mongodb-deployment.yaml
 ps: make sure you have a k8s cluster running, I use minikube.
 
 The server should now be running at `http://localhost:<port>`. You can access the endpoints using a tool like Postman or any web browser.
+
+Author [Lhon Rafaat](https://github.com/LhonRafaat).
