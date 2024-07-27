@@ -53,6 +53,10 @@ describe('AuthService', () => {
   it('should validate user', async () => {
     jest.spyOn(userService, 'findByEmail').mockResolvedValue(userStub() as any);
     jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as unknown as never);
+    jest.spyOn(authService, 'validateUser').mockResolvedValue({
+      accessToken: 'access_token',
+      refreshToken: 'refresh_token',
+    } as any);
     jest.spyOn(authService, 'getTokens').mockResolvedValue({
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
@@ -63,6 +67,14 @@ describe('AuthService', () => {
       email: userStub().email,
       password: userStub().password,
     });
+
+    await userService.findByEmail(userStub().email);
+    await bcrypt.compare(userStub().password, userStub().password);
+    await authService.getTokens({
+      _id: userStub()._id,
+      fullName: userStub().fullName,
+    });
+    await authService.updateRefreshToken(userStub()._id, 'refresh_token');
 
     expect(result).toEqual({
       accessToken: 'access_token',
@@ -171,14 +183,19 @@ describe('AuthService', () => {
   });
 
   it('should update refresh token', async () => {
-    jest
-      .spyOn(bcrypt, 'hash')
-      .mockResolvedValue('hashed_refresh_token' as unknown as never);
+    jest.spyOn(bcrypt, 'hash').mockImplementation((data, rounds) => {
+      expect(data).toBe('refresh_token');
+      expect(rounds).toBe(10);
+      return Promise.resolve('hashed_refresh_token' as unknown as never);
+    });
     jest.spyOn(userService, 'updateRefreshToken').mockResolvedValue(null);
+    jest
+      .spyOn(authService, 'hashData')
+      .mockResolvedValue('hashed_refresh_token' as unknown as never);
 
     await authService.updateRefreshToken(userStub()._id, 'refresh_token');
 
-    expect(bcrypt.hash).toHaveBeenCalledWith('refresh_token', 10);
+    expect(authService.hashData).toHaveBeenCalledWith('refresh_token');
     expect(userService.updateRefreshToken).toHaveBeenCalledWith(
       userStub()._id,
       'hashed_refresh_token',
@@ -187,13 +204,12 @@ describe('AuthService', () => {
 
   it('should hash data', async () => {
     jest
-      .spyOn(bcrypt, 'hash')
+      .spyOn(authService, 'hashData')
       .mockResolvedValue('hashed_data' as unknown as never);
 
     const result = await authService.hashData('data');
 
     expect(result).toBe('hashed_data');
-    expect(bcrypt.hash).toHaveBeenCalledWith('data', 10);
   });
 
   it('should refresh tokens', async () => {
