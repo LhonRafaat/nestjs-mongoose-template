@@ -79,9 +79,14 @@ describe('UsersService', () => {
         }) as any,
     );
     const result = await service.findAll({
-      dateQr: {},
       queryObj: {},
-      skip: 0,
+      pagination: {
+        limit: 10,
+        page: 1,
+        sort: 'createdAt',
+        sortBy: 'desc',
+        skip: 0,
+      },
     } as any);
 
     expect(result).toEqual(findResponse);

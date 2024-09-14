@@ -49,9 +49,14 @@ describe('UsersController', () => {
 
     jest.spyOn(userService, 'findAll').mockResolvedValue(findResponse);
     const result = await userController.findAll({
-      dateQr: {},
       queryObj: {},
-      skip: 0,
+      pagination: {
+        limit: 10,
+        page: 1,
+        sort: 'createdAt',
+        sortBy: 'desc',
+        skip: 0,
+      },
     } as any);
     expect(result).toEqual(findResponse);
   });
