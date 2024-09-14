@@ -1,16 +1,5 @@
-import {
-  Controller,
-  Get,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ApiBearerAuth,
   ApiExtraModels,
@@ -18,10 +7,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { TUser } from './user.model';
-import { AuthGuard } from '@nestjs/passport';
 import {
   Action,
-  IQuery,
   IRequest,
   TResponse,
   getResponseType,
@@ -41,13 +28,10 @@ export class UsersController {
   @Get()
   @ApiOkResponse(getResponseType(TUser))
   @QueryTypes()
-  @UseGuards(AccessTokenGuard, AbilitiesGuard)
-  @checkAbilities({ action: Action.Read, subject: TUser })
-  async findAll(
-    @Req() req: IRequest,
-    @Query() query: IQuery,
-  ): Promise<TResponse<TUser>> {
-    return this.usersService.findAll(req, query);
+  // @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  // @checkAbilities({ action: Action.Read, subject: TUser })
+  async findAll(@Req() req: IRequest): Promise<TResponse<TUser>> {
+    return this.usersService.findAll(req);
   }
 
   @UseGuards(AccessTokenGuard)
