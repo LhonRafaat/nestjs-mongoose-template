@@ -32,25 +32,18 @@ export function QueryTypes() {
         'value of the searched field. ex ?search=name&searchVal=lhon',
     }),
     ApiQuery({
-      name: 'dateField',
+      name: '_',
       required: false,
       type: String,
-      description:
-        'name of the date field you want to query for. By default is createdAt',
-    }),
-    ApiQuery({
-      name: 'start',
-      required: false,
-      type: String,
-      description:
-        'start of the date. ex ?start=2023-03-27T13:07:36.701Z&end=2023-03-27T13:07:36.701Z',
-    }),
-    ApiQuery({
-      name: 'end',
-      required: false,
-      type: String,
-      description:
-        'end of the date. ex ?start=2023-03-27T13:07:36.701Z&end=2023-03-27T13:07:36.701Z',
+      description: `You can query for any field using this format: 
+          ?[field]-[operator]=[value]
+          
+          e.g: 
+          ?fullName-contains=test
+
+          Check README.md for for details.
+        
+        `,
     }),
   );
 }
