@@ -11,4 +11,4 @@ export const operators = new Map([
   ['notContains', '$not'],
 ]);
 
-export const paginationKeys = ['limit', 'page', 'sort', 'sortBy'];
+export const paginationKeys = ['limit', 'page', 'skip', 'sort', 'sortBy'];
