@@ -4,7 +4,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { TUser } from '../user.model';
 import { Model } from 'mongoose';
 import { userStub } from './user.stub';
-import { IQuery, TResponse } from '../../../common/helper/common-types';
+import { TResponse } from '../../../common/helper/common-types';
 import * as bcrypt from 'bcrypt';
 
 // Mock bcrypt.hash function
@@ -78,19 +78,16 @@ describe('UsersService', () => {
           }),
         }) as any,
     );
-    const result = await service.findAll(
-      {
-        dateQr: {},
-        searchObj: {},
-        skip: 0,
-      } as any,
-      {
-        sort: 'createdAt',
-        orderBy: 'desc',
+    const result = await service.findAll({
+      queryObj: {},
+      pagination: {
         limit: 10,
         page: 1,
-      } as IQuery,
-    );
+        sort: 'createdAt',
+        sortBy: 'desc',
+        skip: 0,
+      },
+    } as any);
 
     expect(result).toEqual(findResponse);
     expect(userModel.find).toHaveBeenCalled();

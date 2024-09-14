@@ -3,27 +3,26 @@ import { TUser } from '../../modules/users/user.model';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { InferSubjects } from '@casl/ability';
 
-export interface SearchObj {
-  [key: string]:
-    | number
-    | {
-        $regex: string;
-        $options: string;
-      };
-}
-
-interface DateQuery {
-  [key: string]: {
-    $gte: string;
-    $lte: string;
+export interface queryObj {
+  regular: {
+    [field: string]: { [operator: string]: string };
+  };
+  references: {
+    paths: Array<string>;
+    value: string;
   };
 }
 
 export interface IRequest extends Request {
-  searchObj: SearchObj;
-  dateQr: DateQuery;
-  skip: number;
+  queryObj: queryObj;
   user: TUser;
+  pagination: {
+    limit: number;
+    page: number;
+    skip: number;
+    sort: string;
+    sortBy: string;
+  };
 }
 
 export const getResponseType = (Type: any) => {
@@ -74,11 +73,7 @@ export interface IQuery {
   limit: number;
   page: number;
   sort: string;
-  orderBy: string;
-  search: string[];
-  searchVal: string[] | number[];
-  start: string;
-  end: string;
+  sortBy: string;
 }
 
 export type Subjects = InferSubjects<typeof TUser | 'all'>;

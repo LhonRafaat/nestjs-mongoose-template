@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { CaslAbilityFactory } from '../../modules/casl/casl-ability.factory/casl-ability.factory';
-import { Observable } from 'rxjs';
 import { RequiredRule } from '../helper/common-types';
 import { CHECK_ABILITY } from '../decorators/abilities.decorator';
 import { TUser } from '../../modules/users/user.model';

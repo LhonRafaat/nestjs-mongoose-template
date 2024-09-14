@@ -3,10 +3,9 @@ import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { CaslAbilityFactory } from '../../casl/casl-ability.factory/casl-ability.factory';
-import { IQuery, TResponse } from '../../../common/helper/common-types';
+import { TResponse } from '../../../common/helper/common-types';
 import { TUser } from '../user.model';
 import { userStub } from './user.stub';
-import * as bcrypt from 'bcrypt';
 
 describe('UsersController', () => {
   let userController: UsersController;
@@ -49,19 +48,16 @@ describe('UsersController', () => {
     };
 
     jest.spyOn(userService, 'findAll').mockResolvedValue(findResponse);
-    const result = await userController.findAll(
-      {
-        dateQr: {},
-        searchObj: {},
-        skip: 0,
-      } as any,
-      {
-        sort: 'createdAt',
-        orderBy: 'desc',
+    const result = await userController.findAll({
+      queryObj: {},
+      pagination: {
         limit: 10,
         page: 1,
-      } as IQuery,
-    );
+        sort: 'createdAt',
+        sortBy: 'desc',
+        skip: 0,
+      },
+    } as any);
     expect(result).toEqual(findResponse);
   });
 

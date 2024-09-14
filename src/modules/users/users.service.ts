@@ -5,29 +5,37 @@ import { Model } from 'mongoose';
 import { TUser } from './user.model';
 import { RegisterPayload } from '../auth/dto/register.payload';
 import * as bcrypt from 'bcrypt';
-import { IQuery, IRequest, TResponse } from '../../common/helper/common-types';
+import { IRequest, TResponse } from '../../common/helper/common-types';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel('User') private readonly userModel: Model<TUser>) {}
 
-  async findAll(req: IRequest, query: IQuery): Promise<TResponse<TUser>> {
+  async findAll(req: IRequest): Promise<TResponse<TUser>> {
+    console.log(req.queryObj);
     const users = this.userModel
       .find({
-        ...req.searchObj,
-        ...req.dateQr,
+        ...req.queryObj?.regular,
       })
-      .sort({ [query.sort]: query.orderBy === 'desc' ? -1 : 1 });
+      .sort({
+        [req.pagination.sort]: req.pagination.sortBy === 'desc' ? -1 : 1,
+      });
+    if (req.queryObj?.references) {
+      users.populate(
+        req.queryObj?.references.paths,
+        req.queryObj?.references.value,
+      );
+    }
 
     const total = await users.clone().countDocuments();
 
-    users.limit(+query.limit).skip(req.skip);
+    users.limit(req.pagination.limit).skip(req.pagination.skip);
 
     const response: TResponse<TUser> = {
       result: await users.exec(),
       count: total,
-      limit: +query.limit,
-      page: +query.page,
+      limit: req.pagination.limit,
+      page: req.pagination.page,
     };
 
     return response;
