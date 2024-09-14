@@ -5,7 +5,7 @@ import { InferSubjects } from '@casl/ability';
 
 export interface queryObj {
   regular: {
-    [key: string]: { [operator: string]: string };
+    [field: string]: { [operator: string]: string };
   };
   references: {
     paths: Array<string>;
@@ -13,16 +13,8 @@ export interface queryObj {
   };
 }
 
-interface DateQuery {
-  [key: string]: {
-    $gte: string;
-    $lte: string;
-  };
-}
-
 export interface IRequest extends Request {
   queryObj: queryObj;
-  dateQr: DateQuery;
   user: TUser;
   pagination: {
     limit: number;
@@ -82,10 +74,6 @@ export interface IQuery {
   page: number;
   sort: string;
   sortBy: string;
-  search: string[];
-  searchVal: string[] | number[];
-  start: string;
-  end: string;
 }
 
 export type Subjects = InferSubjects<typeof TUser | 'all'>;

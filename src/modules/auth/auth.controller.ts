@@ -4,7 +4,6 @@ import { AuthService } from './auth.service';
 import { RegisterPayload } from './dto/register.payload';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TAuthResponse } from './types/auth.response';
-import { AuthGuard } from '@nestjs/passport';
 import { IRequest } from '../../common/helper/common-types';
 import { AccessTokenGuard } from '../../common/guards/jwt.guard';
 import { RefreshTokenGuard } from '../../common/guards/refresh.guard';

@@ -21,7 +21,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     });
   }
 
-  async validate({ iat, exp, _id, ...rest }, done): Promise<boolean> {
+  async validate({ iat, exp, _id }, done): Promise<boolean> {
     const timeDiff = exp - iat;
     if (timeDiff <= 0) {
       throw new UnauthorizedException();

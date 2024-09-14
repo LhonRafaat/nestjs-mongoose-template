@@ -7,7 +7,6 @@ import { AuthService } from '../../auth/auth.service';
 import { TUser } from '../user.model';
 import { AppModule } from '../../../app.module';
 import { userStub } from './user.stub';
-import { LoginPayload } from '../../auth/dto/login.payload';
 import { RegisterPayload } from '../../auth/dto/register.payload';
 
 describe('UsersController (e2e)', () => {
