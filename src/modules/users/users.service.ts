@@ -14,10 +14,10 @@ export class UsersService {
   async findAll(req: IRequest, query: IQuery): Promise<TResponse<TUser>> {
     const users = this.userModel
       .find({
-        ...req.searchObj,
+        ...req.queryObj,
         ...req.dateQr,
       })
-      .sort({ [query.sort]: query.orderBy === 'desc' ? -1 : 1 });
+      .sort({ [query.sort]: query.sortBy === 'desc' ? -1 : 1 });
 
     const total = await users.clone().countDocuments();
 

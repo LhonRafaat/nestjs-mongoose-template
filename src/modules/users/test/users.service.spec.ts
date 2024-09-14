@@ -81,12 +81,12 @@ describe('UsersService', () => {
     const result = await service.findAll(
       {
         dateQr: {},
-        searchObj: {},
+        queryObj: {},
         skip: 0,
       } as any,
       {
         sort: 'createdAt',
-        orderBy: 'desc',
+        sortBy: 'desc',
         limit: 10,
         page: 1,
       } as IQuery,

@@ -6,7 +6,6 @@ import { CaslAbilityFactory } from '../../casl/casl-ability.factory/casl-ability
 import { IQuery, TResponse } from '../../../common/helper/common-types';
 import { TUser } from '../user.model';
 import { userStub } from './user.stub';
-import * as bcrypt from 'bcrypt';
 
 describe('UsersController', () => {
   let userController: UsersController;
@@ -52,12 +51,12 @@ describe('UsersController', () => {
     const result = await userController.findAll(
       {
         dateQr: {},
-        searchObj: {},
+        queryObj: {},
         skip: 0,
       } as any,
       {
         sort: 'createdAt',
-        orderBy: 'desc',
+        sortBy: 'desc',
         limit: 10,
         page: 1,
       } as IQuery,

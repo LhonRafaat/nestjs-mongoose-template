@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
-import { FilterationMiddleware } from './common/helper/filteration-middleware';
+import { QueryMiddleware } from './common/helper/query-middleware';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -40,6 +40,6 @@ import { EnvConfig } from './config.type';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(FilterationMiddleware).forRoutes('*');
+    consumer.apply(QueryMiddleware).forRoutes('*');
   }
 }

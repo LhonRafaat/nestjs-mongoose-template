@@ -12,7 +12,7 @@ export function QueryTypes() {
       description: 'ex sort=price',
     }),
     ApiQuery({
-      name: 'orderBy',
+      name: 'sortBy',
       required: false,
       type: String,
       enum: ['asc', 'desc'],
