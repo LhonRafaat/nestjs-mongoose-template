@@ -39,6 +39,40 @@ To get a local copy up and running follow these steps.
    npm install
    ```
 
+### Query model usage
+
+##### The querying system works by combining the searched field, operator, and the value. the format looks like following:
+
+```shell
+field-operator=value
+```
+
+For example:
+
+```shell
+https://url/?fullName-[contains]=lee
+```
+
+For a nested field use "." between the nested fields `user.fullName-[contains]=lee`
+
+##### This only works if the field is not a reference, Im trying to figure out a way to apply it on referencce fields aswell.
+
+#### Available operators and their equvilent in mongoose
+
+```javascript
+
+  ['equals', '$eq'],
+  ['notEquals', '$ne'],
+  ['lessThan', '$lt'],
+  ['lessThanOrEqual', '$lte'],
+  ['greaterThan', '$gt'],
+  ['greaterThanOrEqual', '$gte'],
+  ['in', '$in'],
+  ['notIn', '$nin'],
+  ['contains', '$regex'],
+  ['notContains', '$not'],
+```
+
 ### Usage
 
 To start the development server, run the following command:
