@@ -50,10 +50,10 @@ field-operator=value
 For example:
 
 ```shell
-https://url/?fullName-[contains]=lee
+https://url/?fullName-contains=lee
 ```
 
-For a nested field use "." between the nested fields `user.fullName-[contains]=lee`
+For a nested field use "." between the nested fields `user.fullName-contains=lee`
 
 ##### This only works if the field is not a reference, Im trying to figure out a way to apply it on referencce fields aswell.
 
