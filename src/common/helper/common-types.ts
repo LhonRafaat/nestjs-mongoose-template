@@ -2,14 +2,21 @@ import { Request } from 'express';
 import { TUser } from '../../modules/users/user.model';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { InferSubjects } from '@casl/ability';
+import { ObjectId } from 'mongoose';
 
 export interface queryObj {
   regular: {
-    [field: string]: { [operator: string]: string };
+    [field: string]: {
+      [operator: string]: string | string[] | number | ObjectId[];
+    };
   };
   references: {
-    paths: Array<string>;
-    value: string;
+    [reference: string]: {
+      paths: Array<string>;
+      value: {
+        [operator: string]: string | string[] | number | ObjectId[];
+      };
+    };
   };
 }
 

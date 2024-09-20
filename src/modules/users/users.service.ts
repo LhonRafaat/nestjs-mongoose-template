@@ -20,12 +20,6 @@ export class UsersService {
       .sort({
         [req.pagination.sort]: req.pagination.sortBy === 'desc' ? -1 : 1,
       });
-    if (req.queryObj?.references) {
-      users.populate(
-        req.queryObj?.references.paths,
-        req.queryObj?.references.value,
-      );
-    }
 
     const total = await users.clone().countDocuments();
 

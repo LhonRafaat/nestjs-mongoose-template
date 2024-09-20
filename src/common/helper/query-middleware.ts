@@ -19,6 +19,7 @@ export class QueryMiddleware implements NestMiddleware {
       parsedQueryObj,
     );
 
+    this.parseNumbers(queryObj?.regular);
     req.queryObj = queryObj;
     next();
   }
@@ -57,13 +58,25 @@ export class QueryMiddleware implements NestMiddleware {
         if (this.isNestedField(key)) {
           if (this.isReference(key)) {
             const splitByDot = field.replace('-ref', '').split('.');
+            const referenceField = splitByDot[0];
+            const others = splitByDot.slice(1);
+            const addOptionsI = operator === '$regex';
 
             parsedQueryObj = {
               ...parsedQueryObj,
               references: {
                 ...parsedQueryObj?.references,
-                paths: [...splitByDot],
-                value,
+                [referenceField]: {
+                  paths: [...others],
+                  value: addOptionsI
+                    ? {
+                        [operator]: value,
+                        $options: 'i',
+                      }
+                    : {
+                        [operator]: value,
+                      },
+                },
               },
             };
           } else {
@@ -149,5 +162,26 @@ export class QueryMiddleware implements NestMiddleware {
         }
       });
     });
+  }
+  parseNumbers(obj) {
+    // Recursively traverse the object
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
+
+        if (typeof value === 'object' && value !== null) {
+          // Skip parsing if $regex operator is found
+          if (key === '$regex') continue;
+
+          // Recursively call parseNumbers on nested objects
+          this.parseNumbers(value);
+        } else {
+          // Convert string to number if possible
+          if (!isNaN(value) && key !== '$regex') {
+            obj[key] = Number(value);
+          }
+        }
+      }
+    }
   }
 }
