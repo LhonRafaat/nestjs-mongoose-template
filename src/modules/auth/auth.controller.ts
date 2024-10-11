@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { LoginPayload } from './dto/login.payload';
 import { AuthService } from './auth.service';
 import { RegisterPayload } from './dto/register.payload';
@@ -7,6 +7,7 @@ import { TAuthResponse } from './types/auth.response';
 import { IRequest } from '../../common/helper/common-types';
 import { AccessTokenGuard } from '../../common/guards/jwt.guard';
 import { RefreshTokenGuard } from '../../common/guards/refresh.guard';
+import { GoogleAuthGuard } from '../../common/guards/google.guard';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -28,6 +29,16 @@ export class AuthController {
   })
   async register(@Body() payload: RegisterPayload) {
     return await this.authService.register(payload);
+  }
+
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuth() {}
+
+  @Get('google/redirect')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuthRedirect(@Req() req) {
+    await this.authService.handleGoogleCallback(req);
   }
 
   @UseGuards(AccessTokenGuard)
