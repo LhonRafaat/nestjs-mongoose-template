@@ -6,6 +6,7 @@ import { TUser } from './user.model';
 import { RegisterPayload } from '../auth/dto/register.payload';
 import * as bcrypt from 'bcrypt';
 import { IRequest, TResponse } from '../../common/helper/common-types';
+import { OAuthRegisterPayload } from '../auth/dto/oauth-register-payload';
 
 @Injectable()
 export class UsersService {
@@ -44,6 +45,12 @@ export class UsersService {
     });
   }
 
+  async createWithProvider(payload: OAuthRegisterPayload) {
+    return await this.userModel.create({
+      ...payload,
+    });
+  }
+
   async update(id: string, payload: UpdateUserDto): Promise<TUser> {
     await this.findOne(id);
     return await this.userModel.findByIdAndUpdate(id, payload, {
@@ -71,7 +78,6 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<TUser> {
     const user = await this.userModel.findOne({ email }).select('+password');
-    if (!user) throw new BadRequestException('User not found');
     return user;
   }
 

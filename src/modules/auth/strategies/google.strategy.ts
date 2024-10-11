@@ -6,7 +6,7 @@ import { EnvConfig } from '../../../config.type';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor(private configService: ConfigService<EnvConfig>) {
+  constructor(readonly configService: ConfigService<EnvConfig>) {
     super({
       clientID: configService.get('GOOGLE_CLIENT_ID'),
       clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),

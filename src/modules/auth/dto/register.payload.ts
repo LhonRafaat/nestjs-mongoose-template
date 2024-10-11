@@ -21,6 +21,7 @@ export class RegisterPayload {
   @IsString()
   avatar: string;
 
+  // remove isAdmin in production, this is for testing purposes
   @ApiProperty()
   @IsOptional()
   isAdmin?: boolean;
