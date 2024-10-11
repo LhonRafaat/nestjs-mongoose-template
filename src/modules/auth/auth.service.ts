@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { EnvConfig } from '../../config.type';
 import { TAuthResponse } from './types/auth.response';
+import { IRequest } from '../../common/helper/common-types';
 
 @Injectable()
 export class AuthService {
@@ -45,6 +46,27 @@ export class AuthService {
 
     await this.updateRefreshToken(user._id, tokens.refreshToken);
 
+    return tokens;
+  }
+
+  async handleGoogleCallback(req: IRequest): Promise<TAuthResponse> {
+    let user = await this.usersService.findByEmail(req.user.email);
+
+    if (!user) {
+      user = await this.usersService.createWithProvider(
+        req.user as Omit<RegisterPayload, 'password' | 'isAdmin'> & {
+          oauthProvider: string;
+          oauthProviderId: string;
+        },
+      );
+    }
+
+    const tokens = await this.getTokens({
+      _id: user._id,
+      fullName: user.fullName,
+    });
+
+    await this.updateRefreshToken(user._id, tokens.refreshToken);
     return tokens;
   }
 
