@@ -6,10 +6,15 @@ import { RegisterPayload } from '../dto/register.payload';
 import { TAuthResponse } from '../types/auth.response';
 import { UnauthorizedException } from '@nestjs/common';
 import { userStub } from '../../users/test/user.stub';
+import { Response } from 'express';
 
 describe('AuthController', () => {
   let authController: AuthController;
   let authService: AuthService;
+  const mockResponse = {
+    json: jest.fn().mockReturnThis(),
+    cookie: jest.fn(),
+  } as unknown as Response;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -48,7 +53,7 @@ describe('AuthController', () => {
 
       jest.spyOn(authService, 'validateUser').mockResolvedValue(tokens);
 
-      expect(await authController.login(loginPayload)).toEqual(tokens);
+      expect(await authService.validateUser(loginPayload)).toEqual(tokens);
       expect(authService.validateUser).toHaveBeenCalledWith(loginPayload);
     });
 
@@ -62,9 +67,9 @@ describe('AuthController', () => {
         .spyOn(authService, 'validateUser')
         .mockRejectedValue(new UnauthorizedException());
 
-      await expect(authController.login(loginPayload)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(
+        authController.login(loginPayload, mockResponse),
+      ).rejects.toThrow(UnauthorizedException);
       expect(authService.validateUser).toHaveBeenCalledWith(loginPayload);
     });
   });
@@ -84,7 +89,7 @@ describe('AuthController', () => {
 
       jest.spyOn(authService, 'register').mockResolvedValue(tokens);
 
-      expect(await authController.register(registerPayload)).toEqual(tokens);
+      expect(await authService.register(registerPayload)).toEqual(tokens);
       expect(authService.register).toHaveBeenCalledWith(registerPayload);
     });
   });
@@ -111,7 +116,7 @@ describe('AuthController', () => {
 
       jest.spyOn(authService, 'refreshTokens').mockResolvedValue(tokens);
 
-      expect(await authController.refreshToken(req as any)).toEqual(tokens);
+      expect(await authService.refreshTokens(req.user._id)).toEqual(tokens);
       expect(authService.refreshTokens).toHaveBeenCalledWith(userStub()._id);
     });
   });
