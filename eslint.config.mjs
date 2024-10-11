@@ -39,8 +39,7 @@ export default [
 
       parserOptions: {
         project: 'tsconfig.json',
-        tsconfigRootDir:
-          '/home/lhon/Documents/boilerplates/nestjs-mongoose-template',
+        tsconfigRootDir: process.cwd(),
       },
     },
 
