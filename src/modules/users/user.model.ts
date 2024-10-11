@@ -11,7 +11,13 @@ export class TUser {
   email: string;
 
   @ApiProperty()
-  password: string;
+  password?: string;
+
+  @ApiProperty()
+  oauthProvider?: string;
+
+  @ApiProperty()
+  oauthProviderId?: string;
 
   @ApiProperty()
   avatar: string;
