@@ -31,12 +31,10 @@ export class AuthController {
   async login(
     @Body() payload: LoginPayload,
     @Res() res: Response,
-  ): Promise<TAuthResponse> {
+  ): Promise<Response> {
     const authRes = await this.authService.validateUser(payload);
-
     this.setCookies(res, authRes.accessToken, authRes.refreshToken);
-
-    return authRes;
+    return res.json(authRes);
   }
 
   @Post('register')
@@ -46,11 +44,11 @@ export class AuthController {
   async register(
     @Body() payload: RegisterPayload,
     @Res() res: Response,
-  ): Promise<TAuthResponse> {
+  ): Promise<Response> {
     const authRes = await this.authService.register(payload);
     this.setCookies(res, authRes.accessToken, authRes.refreshToken);
 
-    return authRes;
+    return res.json(authRes);
   }
 
   @Get('google')
@@ -62,12 +60,12 @@ export class AuthController {
   async googleAuthRedirect(
     @Req() req,
     @Res() res: Response,
-  ): Promise<TAuthResponse> {
+  ): Promise<Response> {
     const authRes = await this.authService.handleGoogleCallback(req);
 
     this.setCookies(res, authRes.accessToken, authRes.refreshToken);
 
-    return authRes;
+    return res.json(authRes);
   }
 
   @UseGuards(AccessTokenGuard)
@@ -81,15 +79,15 @@ export class AuthController {
   async refreshToken(
     @Req() req: IRequest,
     @Res() res: Response,
-  ): Promise<TAuthResponse> {
+  ): Promise<Response> {
     const authRes = await this.authService.refreshTokens(req.user._id);
 
     this.setCookies(res, authRes.accessToken, authRes.refreshToken);
 
-    return authRes;
+    return res.json(authRes);
   }
 
-  setCookies = (res: Response, accessToken: string, refreshToken: string) => {
+  setCookies(res: Response, accessToken: string, refreshToken: string) {
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: true,
@@ -103,5 +101,5 @@ export class AuthController {
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-  };
+  }
 }
