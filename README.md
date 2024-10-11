@@ -8,6 +8,7 @@
 - Config Service
 - Swagger
 - Authentication
+- Google oauth
 - Access Control (CASL)
 - Pagination Middleware
 - Refresh and Access tokens
