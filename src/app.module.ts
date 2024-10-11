@@ -22,6 +22,9 @@ import { EnvConfig } from './config.type';
         REFRESH_SECRET: Joi.string().required(),
         ACCESS_TOKEN_EXPIRATION: Joi.string().required(),
         REFRESH_TOKEN_EXPIRATION: Joi.string().required(),
+        GOOGLE_CLIENT_ID: Joi.string().optional(),
+        GOOGLE_CLIENT_SECRET: Joi.string().optional(),
+        GOOGLE_CALLBACK_URL: Joi.string().optional(),
       }),
     }),
     MongooseModule.forRootAsync({
