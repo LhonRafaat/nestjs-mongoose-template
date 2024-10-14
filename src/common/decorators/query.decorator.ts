@@ -22,19 +22,6 @@ export function QueryTypes() {
       name: 'search',
       required: false,
       type: String,
-      description: 'name of the field to search for. ex ?search=name',
-    }),
-    ApiQuery({
-      name: 'searchVal',
-      required: false,
-      type: String,
-      description:
-        'value of the searched field. ex ?search=name&searchVal=lhon',
-    }),
-    ApiQuery({
-      name: '_',
-      required: false,
-      type: String,
       description: `You can query for any field using this format: 
           ?[field]-[operator]=[value]
           
