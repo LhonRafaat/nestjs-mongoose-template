@@ -101,6 +101,15 @@ to run the seeder ts-node the seed.ts file and you can pass how many data to gen
 ts-node seed.ts 50
 ```
 
+to generate the client routes from the swagger run:
+
+```shell
+npm run generate:api-client
+```
+
+this will run `npm run generate:swagger && openapi-generator-cli generate -i swagger.json -g typescript-fetch -o ./src/api-client`
+adjust it to your needs for example if you dont want it to compile to `./src/api-client`
+
 to run the Dockerfile:
 
 ```shell
