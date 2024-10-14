@@ -5,6 +5,16 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "builder": "swc",
-    "typeCheck": true
+    "typeCheck": true,
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "classValidatorShim": true,
+          "introspectComments": true,
+          "dtoFileNameSuffix": [".payload.ts", ".model.ts"]
+        }
+      }
+    ]
   }
 }

@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TUser } from './user.model';
@@ -7,6 +6,7 @@ import { RegisterPayload } from '../auth/dto/register.payload';
 import * as bcrypt from 'bcrypt';
 import { IRequest, TResponse } from '../../common/helper/common-types';
 import { OAuthRegisterPayload } from '../auth/dto/oauth-register-payload';
+import { UpdateUserPayload } from './dto/update-user.payload';
 
 @Injectable()
 export class UsersService {
@@ -51,7 +51,7 @@ export class UsersService {
     });
   }
 
-  async update(id: string, payload: UpdateUserDto): Promise<TUser> {
+  async update(id: string, payload: UpdateUserPayload): Promise<TUser> {
     await this.findOne(id);
     return await this.userModel.findByIdAndUpdate(id, payload, {
       runValidators: true,
