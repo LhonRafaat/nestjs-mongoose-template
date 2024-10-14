@@ -7,6 +7,7 @@
 - Mongoose
 - Config Service
 - Swagger
+- Generate client routes from swagger endpoints
 - Authentication
 - Google oauth
 - Access Control (CASL)
