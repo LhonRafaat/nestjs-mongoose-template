@@ -13,7 +13,6 @@ export class UsersService {
   constructor(@InjectModel('User') private readonly userModel: Model<TUser>) {}
 
   async findAll(req: IRequest): Promise<TResponse<TUser>> {
-    console.log(req.queryObj);
     const users = this.userModel
       .find({
         ...req.queryObj?.regular,
