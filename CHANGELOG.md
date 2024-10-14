@@ -1,5 +1,25 @@
 
 
+## [1.5.0](https://github.com/LhonRafaat/nestjs-mongoose-template/compare/1.3.0...1.5.0) (2024-10-14)
+
+
+### Features
+
+* add extract from cookie to refresh ([e355902](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/e35590292b32f7006d694db1bc91a4c8de300aad))
+* add swagger metadata ([95c4359](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/95c435957bd8526e3fb86fd7cfa68403cb198b5a))
+* add swagger plugin to nest cli ([0f0e93b](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/0f0e93b4e8e61bab7ede3080b1d82fdf344dc525))
+
+
+### Bug Fixes
+
+* update tsConfigRootDir ([bb38b59](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/bb38b591f25da6090f926dc0f3f0b1a06c7defc0))
+
+
+### Code Refactoring
+
+* remove old decorators ([310404b](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/310404be878c928b7f9ee06fc96632b91876b361))
+* update user dto rename ([74c9cd4](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/74c9cd4dba0979439d60f241dc8918621ed19911))
+
 ## [1.3.0](https://github.com/LhonRafaat/nestjs-mongoose-template/compare/1.1.0...1.3.0) (2024-10-11)
 
 
