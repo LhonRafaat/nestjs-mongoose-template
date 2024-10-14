@@ -6,6 +6,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import rateLimiter from 'express-rate-limit';
 import { AllExceptionsFilter } from './common/helper/global-error-handler';
+import metadata from './metadata';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,6 +33,8 @@ async function bootstrap() {
       max: 50, // limit each IP to 100 requests per windowMs
     }),
   );
+  await SwaggerModule.loadPluginMetadata(metadata);
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
   await app.listen(configService.get('PORT'), '0.0.0.0');
