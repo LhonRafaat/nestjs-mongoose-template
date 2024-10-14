@@ -4,6 +4,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
 import { EnvConfig } from '../../../config.type';
+import { IRequest } from '../../../common/helper/common-types';
 
 /**
  * Jwt Strategy Class
@@ -15,10 +16,17 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     private readonly userService: UsersService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        RefreshStrategy.extractFromCookie,
+      ]),
       ignoreExpiration: false,
       secretOrKey: configService.get('REFRESH_SECRET'),
     });
+  }
+
+  private static extractFromCookie(req: IRequest): string | null {
+    return req?.cookies?.access_token || null;
   }
 
   async validate({ iat, exp, _id }, done): Promise<boolean> {
