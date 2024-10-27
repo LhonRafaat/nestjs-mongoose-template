@@ -70,8 +70,10 @@ export class AuthController {
 
   @UseGuards(AccessTokenGuard)
   @Post('logout')
-  async logout(@Req() req: IRequest) {
-    await this.authService.logout(req.user._id);
+  async logout(@Req() req: IRequest, @Res() res: Response) {
+    res.clearCookie('access_token');
+    res.clearCookie('refresh_token');
+    return res.json(await this.authService.logout(req.user._id));
   }
 
   @UseGuards(RefreshTokenGuard)
