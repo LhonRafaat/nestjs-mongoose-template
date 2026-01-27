@@ -40,7 +40,7 @@
     "@nestjs/platform-express": "^10.4.19",
     "@nestjs/swagger": "^7.3.1",
     "@swc/jest": "^0.2.36",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.7",
