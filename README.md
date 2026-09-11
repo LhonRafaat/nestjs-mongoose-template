@@ -13,7 +13,7 @@
 - Authentication
 - Google oauth (optional, enabled by the `GOOGLE_*` variables)
 - Access Control (CASL)
-- Pagination Middleware
+- Filtering, searching and pagination from the query string
 - Refresh and Access tokens
 - Unit testing and E2E testing
 - Seeder
@@ -54,17 +54,17 @@ To get a local copy up and running follow these steps.
 
 The variables are validated on startup by the Zod schema in `src/config.type.ts`, and the app refuses to start if a required one is missing. `EnvConfig` is inferred from the same schema, so `ConfigService<EnvConfig>` is fully typed.
 
-| Variable                   | Required | Default | Description                                     |
-| -------------------------- | -------- | ------- | ----------------------------------------------- |
-| `PORT`                     | no       | `3000`  | HTTP port                                       |
-| `DB_URL`                   | yes      |         | MongoDB connection string                       |
-| `ACCESS_SECRET`            | yes      |         | Secret used to sign access tokens               |
-| `REFRESH_SECRET`           | yes      |         | Secret used to sign refresh tokens              |
-| `ACCESS_TOKEN_EXPIRATION`  | yes      |         | Access token lifetime, e.g. `10m`               |
-| `REFRESH_TOKEN_EXPIRATION` | yes      |         | Refresh token lifetime, e.g. `7d`               |
-| `GOOGLE_CLIENT_ID`         | no       |         | Google OAuth client id (see Google login)       |
-| `GOOGLE_CLIENT_SECRET`     | no       |         | Google OAuth client secret (see Google login)   |
-| `GOOGLE_CALLBACK_URL`      | no       |         | Google OAuth callback url (see Google login)    |
+| Variable                   | Required | Default | Description                                   |
+| -------------------------- | -------- | ------- | --------------------------------------------- |
+| `PORT`                     | no       | `3000`  | HTTP port                                     |
+| `DB_URL`                   | yes      |         | MongoDB connection string                     |
+| `ACCESS_SECRET`            | yes      |         | Secret used to sign access tokens             |
+| `REFRESH_SECRET`           | yes      |         | Secret used to sign refresh tokens            |
+| `ACCESS_TOKEN_EXPIRATION`  | yes      |         | Access token lifetime, e.g. `10m`             |
+| `REFRESH_TOKEN_EXPIRATION` | yes      |         | Refresh token lifetime, e.g. `7d`             |
+| `GOOGLE_CLIENT_ID`         | no       |         | Google OAuth client id (see Google login)     |
+| `GOOGLE_CLIENT_SECRET`     | no       |         | Google OAuth client secret (see Google login) |
+| `GOOGLE_CALLBACK_URL`      | no       |         | Google OAuth callback url (see Google login)  |
 
 ### Validation (Zod)
 
@@ -111,7 +111,11 @@ Open `http://localhost:<port>/api/auth/google` in a browser to sign in. Google r
 
 ### Query model usage
 
-##### The querying system works by combining the searched field, operator, and the value. the format looks like following:
+`QueryMiddleware` parses the query string of every request into `req.queryObj` and `req.pagination`, and `buildQueryFilter()` turns that into a mongoose filter.
+
+#### Filtering
+
+The querying system works by combining the searched field, operator, and the value. the format looks like following:
 
 ```shell
 field-operator=value
@@ -122,10 +126,6 @@ For example:
 ```shell
 https://url/?fullName-contains=lee
 ```
-
-For a nested field use "." between the nested fields `user.fullName-contains=lee`
-
-##### This only works if the field is not a reference, Im trying to figure out a way to apply it on reference fields as well.
 
 #### Available operators and their equivalent in mongoose
 
@@ -143,7 +143,60 @@ For a nested field use "." between the nested fields `user.fullName-contains=lee
   ['notContains', '$not'],
 ```
 
-Pagination uses the `page`, `limit`, `sort` and `sortBy` (`asc` | `desc`) query parameters and defaults to `page=1&limit=10&sort=createdAt&sortBy=desc`.
+- `in` and `notIn` take a comma separated list: `?email-in=a@b.c,d@e.f`
+- `contains` and `notContains` are case insensitive
+- numeric values are converted to numbers, so `?views-greaterThan=10` compares numbers
+- an unknown operator is rejected with a `400`
+
+#### Nested and referenced fields
+
+For a field of an embedded document use "." between the nested fields:
+
+```shell
+?address.city-contains=erbil
+```
+
+For a field of a **referenced** document (a `ref` in the schema) add `-ref-` before the operator:
+
+```shell
+?author.fullName-ref-contains=lee
+```
+
+The referenced collection is queried first and the matching ids are applied with `$in`. It works both for a single reference and for an array of references, and it fails with a `400` when the field is not a reference, or when no field is given (`?author-ref-contains=lee`).
+
+#### Search
+
+```shell
+?search=lee
+```
+
+Matches case insensitively across every text field of the model, except the ones declared with `select: false`. The term is matched literally, so regex characters are escaped.
+
+#### Pagination
+
+`page`, `limit`, `sort` and `sortBy` (`asc` | `desc`) default to `page=1&limit=10&sort=createdAt&sortBy=desc` and are available on `req.pagination`.
+
+#### Using it in your own service
+
+Add `QueryTypes()` to the controller for the Swagger parameters, then build the filter from the parsed query:
+
+```ts
+async findAll(req: IRequest): Promise<TResponse<TPost>> {
+  const posts = this.postModel
+    .find(await buildQueryFilter(this.postModel, req.queryObj))
+    .sort({ [req.pagination.sort]: req.pagination.sortBy === 'desc' ? -1 : 1 });
+
+  const count = await posts.clone().countDocuments();
+  posts.limit(req.pagination.limit).skip(req.pagination.skip);
+
+  return {
+    result: await posts.exec(),
+    count,
+    limit: req.pagination.limit,
+    page: req.pagination.page,
+  };
+}
+```
 
 ### Usage
 
@@ -211,6 +264,7 @@ The template follows the [NestJS 12 migration guide](https://docs.nestjs.com/mig
 - **Express 5.** Wildcard routes must be named (`forRoutes('{*splat}')` instead of `forRoutes('*')`), and `req.query` is a read-only getter, so middleware must not assign to it. Pagination values live on `req.pagination`.
 - **Mongoose 9.** Use `{ returnDocument: 'after' }` instead of `{ new: true }` in `findByIdAndUpdate` / `findOneAndUpdate`.
 - **Passport.** Nest 12 only reads `@Optional()` from a class's own constructor, so guards that extend `AuthGuard()` re-declare `constructor(@Optional() options?: AuthModuleOptions)` (see `src/common/guards`). Without it, every module that uses the guard would have to import `PassportModule`. Strategies return the user from `validate()` instead of calling `done()`.
+- **Queries.** Reference filters (`-ref-`) and `search` are applied by `buildQueryFilter()`, so services pass `req.queryObj` to it instead of spreading `req.queryObj.regular` into `find()`.
 - **Jest.** The test scripts run Jest with `node --experimental-vm-modules` so it can load the ESM Nest packages. Call `npm run test` rather than `npx jest`.
 - **Husky 9.** Hooks are plain shell files in `.husky/`, and `prepare` runs `husky`.
 

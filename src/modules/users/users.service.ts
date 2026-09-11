@@ -5,6 +5,7 @@ import { TUser } from './user.model';
 import { RegisterPayload } from '../auth/dto/register.payload';
 import * as bcrypt from 'bcrypt';
 import { IRequest, TResponse } from '../../common/helper/common-types';
+import { buildQueryFilter } from '../../common/helper/query-filter';
 import { OAuthRegisterPayload } from '../auth/dto/oauth-register-payload';
 import { UpdateUserPayload } from './dto/update-user.payload';
 
@@ -14,9 +15,7 @@ export class UsersService {
 
   async findAll(req: IRequest): Promise<TResponse<TUser>> {
     const users = this.userModel
-      .find({
-        ...req.queryObj?.regular,
-      })
+      .find(await buildQueryFilter(this.userModel, req.queryObj))
       .sort({
         [req.pagination.sort]: req.pagination.sortBy === 'desc' ? -1 : 1,
       });

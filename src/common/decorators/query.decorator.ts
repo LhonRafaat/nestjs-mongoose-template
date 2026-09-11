@@ -22,14 +22,18 @@ export function QueryTypes() {
       name: 'search',
       required: false,
       type: String,
-      description: `You can query for any field using this format: 
-          ?[field]-[operator]=[value]
-          
-          e.g: 
-          ?fullName-contains=test
+      description: `Case insensitive search across all the text fields, ex search=lee
 
-          Check README.md for for details.
-        
+        Any field can also be filtered with this format:
+          ?[field]-[operator]=[value]
+
+        e.g:
+          ?fullName-contains=test
+          ?email-in=a@b.c,d@e.f
+          ?author.fullName-ref-contains=test
+
+        Check README.md for for details.
+
         `,
     }),
   );

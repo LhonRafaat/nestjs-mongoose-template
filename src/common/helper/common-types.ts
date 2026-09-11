@@ -4,20 +4,26 @@ import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { InferSubjects } from '@casl/ability';
 import { ObjectId } from 'mongoose';
 
+export type queryValue = string | string[] | number | ObjectId[];
+
+export type queryConditions = {
+  [operator: string]: queryValue;
+};
+
 export interface queryObj {
-  regular: {
-    [field: string]: {
-      [operator: string]: string | string[] | number | ObjectId[];
-    };
+  // filters on the model's own fields, e.g. ?fullName-contains=lee
+  regular?: {
+    [field: string]: queryConditions;
   };
-  references: {
+  // filters on a referenced document, e.g. ?author.fullName-ref-contains=lee
+  references?: {
     [reference: string]: {
       paths: Array<string>;
-      value: {
-        [operator: string]: string | string[] | number | ObjectId[];
-      };
+      value: queryConditions;
     };
   };
+  // free text search across the model's text fields, e.g. ?search=lee
+  search?: string;
 }
 
 export interface IRequest extends Request {

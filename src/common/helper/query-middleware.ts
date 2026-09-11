@@ -4,19 +4,21 @@ import {
   NestMiddleware,
 } from '@nestjs/common';
 import { Response, NextFunction } from 'express';
-import { IRequest, queryObj } from './common-types';
-import { operators, paginationKeys } from './operators';
+import { IRequest, queryConditions, queryObj } from './common-types';
+import {
+  arrayOperators,
+  operators,
+  paginationKeys,
+  SEARCH_KEY,
+} from './operators';
 
 @Injectable()
 export class QueryMiddleware implements NestMiddleware {
   async use(req: IRequest, res: Response, next: NextFunction) {
-    let parsedQueryObj: queryObj;
-
     this.addDefaultPagination(req);
 
     const queryObj = this.parseQueryObject(
       new Map(Object.entries(req.query as unknown as Record<string, string>)),
-      parsedQueryObj,
     );
 
     this.parseNumbers(queryObj?.regular);
@@ -40,71 +42,53 @@ export class QueryMiddleware implements NestMiddleware {
 
   parseQueryObject(
     queryObj: Map<string, string>,
-    parsedQueryObj: queryObj,
+    parsedQueryObj?: queryObj,
   ): queryObj {
     //check if the operators are vaild
     queryObj?.forEach((value, key) => {
-      const field = this.getField(key);
-
-      const isPagination = this.isPagination(key);
-
       //only parse queries that are not paginations
-      if (!isPagination) {
-        const operator = this.isValidOperator(key);
+      if (this.isPagination(key)) return;
 
-        // a query is either a nested field or a regular field
-        // a nested field can either be a reference or a regular field
-        if (this.isNestedField(key)) {
-          if (this.isReference(key)) {
-            const splitByDot = field.replace('-ref', '').split('.');
-            const referenceField = splitByDot[0];
-            const others = splitByDot.slice(1);
-            const addOptionsI = operator === '$regex';
+      if (key === SEARCH_KEY) {
+        parsedQueryObj = { ...parsedQueryObj, search: value };
+        return;
+      }
 
-            parsedQueryObj = {
-              ...parsedQueryObj,
-              references: {
-                ...parsedQueryObj?.references,
-                [referenceField]: {
-                  paths: [...others],
-                  value: addOptionsI
-                    ? {
-                        [operator]: value,
-                        $options: 'i',
-                      }
-                    : {
-                        [operator]: value,
-                      },
-                },
-              },
-            };
-          } else {
-            parsedQueryObj = {
-              ...parsedQueryObj,
-              regular: {
-                ...parsedQueryObj?.regular,
-                [field]: { [operator]: value },
-              },
-            };
-          }
-        } else {
-          parsedQueryObj = {
-            ...parsedQueryObj,
-            regular: {
-              ...parsedQueryObj?.regular,
-              [field]: { [operator]: value },
-            },
-          };
+      const field = this.getField(key);
+      const operator = this.isValidOperator(key);
+      const parsedValue = this.parseValue(operator, value);
+
+      // a query is either a reference or a regular (possibly nested) field
+      if (this.isReference(key)) {
+        const [reference, ...paths] = field.replace('-ref', '').split('.');
+
+        if (!paths.length) {
+          throw new BadRequestException(
+            `Missing the field to query on the reference: '(${key})', e.g. 'author.fullName-ref-contains'`,
+          );
         }
+
+        parsedQueryObj = {
+          ...parsedQueryObj,
+          references: {
+            ...parsedQueryObj?.references,
+            [reference]: { paths, value: { [operator]: parsedValue } },
+          },
+        };
+      } else {
+        parsedQueryObj = {
+          ...parsedQueryObj,
+          regular: {
+            ...parsedQueryObj?.regular,
+            [field]: { [operator]: parsedValue },
+          },
+        };
       }
     });
 
-    // add options i if the operator is regex
     // TODO: make it so that both options are available
     // based on users need
-
-    this.addOptionsIfRegex(parsedQueryObj);
-    this.addRegexIfNot(parsedQueryObj);
+    this.normalizeRegexConditions(parsedQueryObj);
     return parsedQueryObj;
   }
 
@@ -134,34 +118,37 @@ export class QueryMiddleware implements NestMiddleware {
     return key.includes('-ref-');
   }
 
-  addOptionsIfRegex(parsedQueryObj: queryObj) {
-    if (!parsedQueryObj?.regular) return;
-    Object.keys(parsedQueryObj?.regular).map((key) => {
-      Object.keys(parsedQueryObj?.regular[key]).map((k) => {
-        if (k === '$regex') {
-          parsedQueryObj.regular[key] = {
-            ...parsedQueryObj.regular[key],
-            $options: 'i',
-          };
-        }
-      });
+  // $in and $nin need an array, the rest are single values
+  parseValue(operator: string, value: string): string | string[] {
+    return arrayOperators.has(operator)
+      ? value.split(',').map((item) => item.trim())
+      : value;
+  }
+
+  // makes `contains` case insensitive and turns `notContains` into a negated regex,
+  // for regular fields and for the values of reference queries alike
+  normalizeRegexConditions(parsedQueryObj: queryObj) {
+    const conditions = [
+      ...Object.values(parsedQueryObj?.regular ?? {}),
+      ...Object.values(parsedQueryObj?.references ?? {}).map(
+        (reference) => reference.value,
+      ),
+    ];
+
+    conditions.forEach((condition: queryConditions) => {
+      if ('$regex' in condition) {
+        condition.$options = 'i';
+      }
+
+      if ('$not' in condition) {
+        condition.$not = {
+          $regex: condition.$not,
+          $options: 'i',
+        } as unknown as string;
+      }
     });
   }
-  addRegexIfNot(queryObj: queryObj) {
-    if (!queryObj?.regular) return;
-    Object.keys(queryObj?.regular).map((key) => {
-      Object.keys(queryObj?.regular[key]).map((k) => {
-        if (k === '$not') {
-          queryObj.regular[key] = {
-            [`$not`]: {
-              $regex: queryObj.regular[key].$not,
-              $options: 'i',
-            } as unknown as string,
-          };
-        }
-      });
-    });
-  }
+
   parseNumbers(obj) {
     // Recursively traverse the object
     for (const key in obj) {
@@ -175,8 +162,8 @@ export class QueryMiddleware implements NestMiddleware {
           // Recursively call parseNumbers on nested objects
           this.parseNumbers(value);
         } else {
-          // Convert string to number if possible
-          if (!isNaN(value) && key !== '$regex') {
+          // Convert string to number if possible, an empty value is not a 0
+          if (value !== '' && !isNaN(value) && key !== '$regex') {
             obj[key] = Number(value);
           }
         }
