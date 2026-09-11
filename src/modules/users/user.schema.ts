@@ -21,8 +21,9 @@ export const User = new Schema<TUser>(
 
     password: {
       type: String,
+      // local accounts need a password, oauth accounts don't have one
       required: function () {
-        return this.oauthProviderId ? true : false;
+        return !this.oauthProviderId;
       },
       select: false,
     },

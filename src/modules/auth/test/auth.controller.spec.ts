@@ -14,6 +14,7 @@ describe('AuthController', () => {
   const mockResponse = {
     json: jest.fn().mockReturnThis(),
     cookie: jest.fn(),
+    clearCookie: jest.fn(),
   } as unknown as Response;
 
   beforeEach(async () => {
@@ -100,7 +101,7 @@ describe('AuthController', () => {
 
       jest.spyOn(authService, 'logout').mockResolvedValue(null);
 
-      await authController.logout(req as any);
+      await authController.logout(req as any, mockResponse);
 
       expect(authService.logout).toHaveBeenCalledWith(userStub()._id);
     });

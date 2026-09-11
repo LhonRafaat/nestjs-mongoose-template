@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { StandardSchemaValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
@@ -15,13 +15,8 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   app.setGlobalPrefix('api');
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // set to true to throw an error if extra fields were sent by client
-      forbidNonWhitelisted: true, // use with whitelist
-      disableErrorMessages: false, // set to true if you do not want to send detailed error messages back to client
-    }),
-  );
+  // validates every @Body/@Query/@Param that declares a `schema` (see the zod schemas in dto folders)
+  app.useGlobalPipes(new StandardSchemaValidationPipe());
   const config = new DocumentBuilder()
     .setTitle('Example Api')
     .setDescription('A documentation from example api')
@@ -31,8 +26,8 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(
     rateLimiter({
-      windowMs: 60, // 1 minutes
-      max: 50, // limit each IP to 100 requests per windowMs
+      windowMs: 60 * 1000, // 1 minute
+      limit: 50, // limit each IP to 50 requests per windowMs
     }),
   );
   await SwaggerModule.loadPluginMetadata(metadata);

@@ -1,14 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { z } from 'zod';
 
-export class LoginPayload {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  email: string;
+// strictObject rejects unknown keys (same as the old whitelist + forbidNonWhitelisted)
+export const loginSchema = z.strictObject({
+  email: z.string().min(1),
+  password: z.string().min(1),
+});
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  password: string;
-}
+export type LoginPayload = z.infer<typeof loginSchema>;

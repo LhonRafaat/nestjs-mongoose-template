@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/swagger';
-import { TUser } from '../user.model';
+import { z } from 'zod';
+import { registerSchema } from '../../auth/dto/register.payload';
 
-export class UpdateUserPayload extends PartialType(TUser) {}
+// password is left out on purpose: UsersService.update does not hash it
+export const updateUserSchema = registerSchema
+  .omit({ password: true })
+  .partial();
+
+export type UpdateUserPayload = z.infer<typeof updateUserSchema>;

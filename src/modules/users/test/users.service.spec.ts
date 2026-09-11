@@ -51,10 +51,16 @@ describe('UsersService', () => {
 
     jest.spyOn(userModel, 'create').mockResolvedValue(userStub() as any);
 
-    const result = await service.create(userStub());
+    const { fullName, email, password, avatar } = userStub();
+    const result = await service.create({ fullName, email, password, avatar });
 
     expect(result).toEqual(userStub());
-    expect(userModel.create).toHaveBeenCalledWith(userStub());
+    expect(userModel.create).toHaveBeenCalledWith({
+      fullName,
+      email,
+      password,
+      avatar,
+    });
   });
 
   it('should return all users', async () => {
@@ -117,7 +123,7 @@ describe('UsersService', () => {
     expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith(
       userStub()._id,
       userStub(),
-      { runValidators: true, new: true },
+      { runValidators: true, returnDocument: 'after' },
     );
   });
 
@@ -162,7 +168,7 @@ describe('UsersService', () => {
     expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith(
       userStub()._id,
       { refreshToken: 'token' },
-      { runValidators: true, new: true },
+      { runValidators: true, returnDocument: 'after' },
     );
   });
 });

@@ -54,7 +54,7 @@ export class UsersService {
     await this.findOne(id);
     return await this.userModel.findByIdAndUpdate(id, payload, {
       runValidators: true,
-      new: true,
+      returnDocument: 'after',
     });
   }
 
@@ -65,7 +65,7 @@ export class UsersService {
       {
         refreshToken,
       },
-      { new: true, runValidators: true },
+      { returnDocument: 'after', runValidators: true },
     );
   }
 

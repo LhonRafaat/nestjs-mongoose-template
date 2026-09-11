@@ -7,9 +7,9 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { LoginPayload } from './dto/login.payload';
+import { LoginPayload, loginSchema } from './dto/login.payload';
 import { AuthService } from './auth.service';
-import { RegisterPayload } from './dto/register.payload';
+import { RegisterPayload, registerSchema } from './dto/register.payload';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TAuthResponse } from './types/auth.response';
 import { IRequest } from '../../common/helper/common-types';
@@ -29,7 +29,7 @@ export class AuthController {
     type: TAuthResponse,
   })
   async login(
-    @Body() payload: LoginPayload,
+    @Body({ schema: loginSchema }) payload: LoginPayload,
     @Res() res: Response,
   ): Promise<Response> {
     const authRes = await this.authService.validateUser(payload);
@@ -42,7 +42,7 @@ export class AuthController {
     type: TAuthResponse,
   })
   async register(
-    @Body() payload: RegisterPayload,
+    @Body({ schema: registerSchema }) payload: RegisterPayload,
     @Res() res: Response,
   ): Promise<Response> {
     const authRes = await this.authService.register(payload);

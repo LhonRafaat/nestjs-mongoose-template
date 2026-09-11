@@ -4,10 +4,10 @@
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.(t|j)s$": "@swc/jest"
   },
   "moduleNameMapper": {
-    "^@/(.*)$": "<rootDir>/../src/$1",
-    "^@helper/(.*)$": "<rootDir>/../src/common/helper/$1"
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@helper/(.*)$": "<rootDir>/src/common/helper/$1"
   }
 }

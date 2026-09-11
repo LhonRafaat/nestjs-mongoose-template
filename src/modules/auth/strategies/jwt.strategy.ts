@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
 import { EnvConfig } from '../../../config.type';
 import { IRequest } from '../../../common/helper/common-types';
+import { TUser } from '../../users/user.model';
 
 /**
  * Jwt Strategy Class
@@ -29,7 +30,16 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     return req?.cookies?.access_token || null;
   }
 
-  async validate({ iat, exp, _id }, done): Promise<boolean> {
+  // the returned user becomes req.user
+  async validate({
+    iat,
+    exp,
+    _id,
+  }: {
+    iat: number;
+    exp: number;
+    _id: string;
+  }): Promise<TUser> {
     const timeDiff = exp - iat;
     if (timeDiff <= 0) {
       throw new UnauthorizedException();
@@ -40,8 +50,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException();
     }
 
-    done(null, user);
-
-    return true;
+    return user;
   }
 }

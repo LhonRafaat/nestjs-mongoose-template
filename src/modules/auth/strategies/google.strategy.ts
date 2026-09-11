@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, VerifyCallback } from 'passport-google-oauth20';
+import { Profile, Strategy } from 'passport-google-oauth20';
 import { ConfigService } from '@nestjs/config';
 import { EnvConfig } from '../../../config.type';
+import { OAuthRegisterPayload } from '../dto/oauth-register-payload';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -15,23 +16,23 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
   }
 
-  async validate(
-    profile: {
-      id: string;
-      name: { givenName: string; familyName: string };
-      emails: { value: string }[];
-      photos: { value: string }[];
-    },
-    done: VerifyCallback,
-  ): Promise<void> {
-    const { name, emails, photos } = profile;
-    const user = {
-      fullName: `${name.givenName} ${name.familyName}`,
-      email: emails[0].value,
-      avatar: photos[0].value,
+  // called with (accessToken, refreshToken, profile), the returned value becomes req.user
+  validate(
+    _accessToken: string,
+    _refreshToken: string,
+    profile: Profile,
+  ): OAuthRegisterPayload {
+    const email = profile.emails?.[0]?.value;
+    if (!email) {
+      throw new UnauthorizedException('Your Google account has no email');
+    }
+
+    return {
+      fullName: profile.displayName,
+      email,
+      avatar: profile.photos?.[0]?.value,
       oauthProvider: 'google',
       oauthProviderId: profile.id,
     };
-    done(null, user);
   }
 }

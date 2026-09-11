@@ -1,10 +1,10 @@
-FROM node:20.14.0-alpine as build
+FROM node:24-alpine AS build
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --legacy-peer-deps 
+RUN npm ci
 
 COPY . .
 
@@ -12,7 +12,7 @@ RUN npm run build
 
 # stage 2
 
-FROM node:20.14.0-alpine
+FROM node:24-alpine
 
 WORKDIR /usr/src/app
 
@@ -24,7 +24,8 @@ COPY --from=build /usr/src/app/dist ./dist
 
 COPY package*.json ./
 
-RUN npm install --only=production --legacy-peer-deps
+# husky (the prepare script) is a dev dependency, so drop the hook before a production install
+RUN npm pkg delete scripts.prepare && npm ci --omit=dev
 
 RUN rm package*.json
 

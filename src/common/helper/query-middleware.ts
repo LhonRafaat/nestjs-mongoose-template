@@ -25,17 +25,16 @@ export class QueryMiddleware implements NestMiddleware {
   }
 
   addDefaultPagination(req: IRequest) {
-    req.query.limit = (req.query.limit || '10') as string;
-    req.query.page = (req.query.page || '1') as string;
-    req.query.skip = ((+req.query.page - 1) * +req.query.limit).toString();
-    req.query.sort = (req.query.sort || 'createdAt') as string;
-    req.query.sortBy = (req.query.sortBy || 'desc') as string;
+    // Express 5 re-parses req.query on every access, so defaults can't be written back to it
+    const query = req.query as Record<string, string>;
+    const limit = +(query.limit || 10);
+    const page = +(query.page || 1);
     req.pagination = {
-      limit: +req.query.limit,
-      page: +req.query.page,
-      skip: +req.query.skip,
-      sort: req.query.sort,
-      sortBy: req.query.sortBy,
+      limit,
+      page,
+      skip: (page - 1) * limit,
+      sort: query.sort || 'createdAt',
+      sortBy: query.sortBy || 'desc',
     };
   }
 

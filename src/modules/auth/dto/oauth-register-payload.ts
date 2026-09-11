@@ -1,28 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { z } from 'zod';
+import { registerSchema } from './register.payload';
 
-export class OAuthRegisterPayload {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  oauthProvider: string;
+export const oauthRegisterSchema = registerSchema
+  .omit({ password: true, isAdmin: true })
+  .extend({
+    oauthProvider: z.string().min(1),
+    oauthProviderId: z.string().min(1),
+  });
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  oauthProviderId: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  fullName: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  email: string;
-
-  @ApiProperty()
-  @IsString()
-  avatar: string;
-}
+export type OAuthRegisterPayload = z.infer<typeof oauthRegisterSchema>;

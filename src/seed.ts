@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { UserSeeder } from './modules/users/users.seeder';
-import { AppModule } from './app.module';
+import { SeederModule } from './seeder.module';
 
 async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(AppModule);
+  const app = await NestFactory.createApplicationContext(SeederModule);
   const seeder = app.get(UserSeeder);
 
   const args = process.argv.slice(2);
