@@ -1,4 +1,22 @@
+# Changelog
 
+## [1.6.0](https://github.com/LhonRafaat/nestjs-mongoose-template/compare/1.5.0...1.6.0) (2026-09-11)
+
+### Features
+
+* add clear cookies on logout ([4c85ace](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/4c85ace9960308409872ff08c3e3cd6e9e81bf8b))
+* add cookie parser and initialize it ([e611bc5](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/e611bc595684f9981a943ff4eb45eb99442ef2e9))
+* enhance query system with filtering, searching, and pagination capabilities ([f559ed8](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/f559ed8d0b7767b60894428cb4c84c82d0491fe2))
+* upgrade nest v12 ([51b80f4](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/51b80f42b0f4247847904f345cb3db35b6cecb26))
+
+### Documentation
+
+* update readme ([69dd2b0](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/69dd2b0269dfb73bcdc16ac982b04419bff1e81e))
+* update readme ([d01c686](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/d01c686bbae977af7fdd5743724cbcac014b50b6))
+
+### Code Refactoring
+
+* small fix ([eed6b58](https://github.com/LhonRafaat/nestjs-mongoose-template/commit/eed6b58ef27717e107b2e3b4401ba3aae66960c6))
 
 ## [1.5.0](https://github.com/LhonRafaat/nestjs-mongoose-template/compare/1.3.0...1.5.0) (2024-10-14)
 
